@@ -1,0 +1,198 @@
+Phase 0 — Foundations (repo + rules)
+
+Create the repo & folders
+Use the exact structure you posted. Add a README with project goals and non-goals.
+
+Decide guardrails & scope
+
+Audience (patients, HCPs, B2B).
+
+Content types (blogs, ads, product pages, social posts).
+
+Regions (US/EU/PK etc.) → this affects claims & disclaimers.
+
+Write compliance rules (no code yet)
+
+Banned/flagged claims (e.g., “cure”, “100% safe”, dosage advice).
+
+Required disclaimers per content type.
+
+Source quality policy (peer-reviewed, gov/NGO, date freshness).
+Save as a plain text spec in agents/compliance_rules.md.
+
+✅ Done when: repo exists, scope + compliance rules documented, and you know exactly what content you’ll generate first (pick 2–3 content types).
+
+Phase 1 — Data & Knowledge Base
+
+Collect seed corpus into data/
+
+Medical facts: authoritative sites, drug monographs, guidelines.
+
+Style corpus: your brand voice, past medical marketing copy.
+
+Keep filenames traceable; capture source, URL, published date.
+
+Design chunking & metadata schema (on paper)
+
+Chunk size policy (e.g., 300–500 tokens).
+
+Metadata fields: source, url, published_date, doc_type, topic, region, license, brand_voice.
+
+Freshness plan
+
+What gets “live lookup” (e.g., drug safety alerts), what stays in vector DB.
+
+Define max age (e.g., “guidelines older than 24 months must be refreshed”).
+
+✅ Done when: you have a small, clean dataset (even 50–200 docs) and a crisp metadata schema.
+
+Phase 2 — Retrieval Layer Design
+
+Vector store choice & retrieval policy
+
+Prototype: FAISS local. Scale: Pinecone/Weaviate/Milvus.
+
+Retrieval policy: hybrid (dense similarity + keyword filter by date/topic).
+
+External “up-to-date” sources (design first)
+
+PubMed (research), FDA (drug updates), WHO/CDC (guidelines), ClinicalTrials.gov (trends).
+
+Decide which are mandatory per content type (e.g., every “drug” copy must check FDA + one guideline).
+
+Citations & auditability spec
+
+Always return sources with titles, URLs, and dates.
+
+Store them in the conversation state for export.
+
+✅ Done when: you’ve documented the retriever mix (vector + live), the “top_k”, date filters, and the must-cite rules.
+
+Phase 3 — Agent Architecture (MCP + HITL)
+
+Define the agents (no code yet)
+
+Research Agent: queries vector + live APIs; returns curated context + citations.
+
+Copy Agent: produces drafts conditioned on tone, audience, channel.
+
+Compliance Agent: checks claims, adds mandatory disclaimers, flags issues.
+
+Human Agent (HITL): approve / request edits / reject; captures feedback.
+
+Plan the graph in graph.py
+State fields you’ll carry: task, audience, tone, brand_guidelines, context_passages, citations, draft, compliance_findings, review_feedback, final_output.
+
+MCP interpretation
+
+If you mean Model Context Protocol: plan a tools layer exposing external data sources as MCP tools (e.g., a “pubmed.search” tool).
+
+If you mean multi-agent control & planning: your 4 specialized agents + a simple planner node already satisfy it.
+
+✅ Done when: you have a diagram/notes of nodes, edges, and state transitions (including loops for human feedback).
+
+Phase 4 — Prompts & Policies
+
+Author prompt specs (plain text)
+
+Research prompt: how to select, summarize, and rank sources; ask for dates.
+
+Copy prompt: structure per content type (headline, hook, body, CTA, disclaimer slot), tone sliders (formal/empathetic/persuasive).
+
+Compliance prompt: explicit red-flag patterns, regulated words, region rules, and required disclaimer templates.
+
+Grounding format
+
+Decide how context is injected (bullet facts with source/date).
+
+Require the model to only make claims supported by the provided facts.
+
+✅ Done when: each agent has its own prompt spec + acceptance criteria.
+
+Phase 5 — UI/UX & Human-in-the-Loop Flow
+
+App UX (wireframe)
+
+Left: task form (content type, audience, tone, keywords, region).
+
+Middle: draft view with inline citations.
+
+Right: “Evidence” panel (sources with dates), compliance report.
+
+Footer: Approve / Request changes / Reject; export (MD/DOCX).
+
+Review loop design
+
+On “Request changes”: capture structured feedback (tone, length, target keyword density, claims to add/remove).
+
+Persist all versions and decisions.
+
+✅ Done when: you have a mock of the screens and the review loop.
+
+Phase 6 — Evaluation & QA Plan
+
+Golden tasks
+
+Prepare 15–30 representative prompts across content types.
+
+Define success metrics: factuality, compliance score, readability, on-brand voice, SEO readiness.
+
+Rubrics & checklists
+
+Factuality: every claim has a citation with date ≤ max age.
+
+Compliance: 0 red-flag phrases; disclaimer present & correct.
+
+Style: meets tone constraints; meets word count; includes CTA.
+
+Spot checks for freshness
+
+At least 1 live source consulted when topic is time-sensitive (drugs/outbreaks).
+
+✅ Done when: you can score outputs consistently using your rubric.
+
+Phase 7 — Observability & Governance
+
+Telemetry schema (design)
+
+Log inputs, retrieved sources, model versions, prompts, draft versions, compliance flags, reviewer actions, final output, timestamps.
+
+Content provenance
+
+Store citations with stable IDs; export a “sources.json” alongside each delivered asset.
+
+Security & privacy
+
+No PHI ingestion; redact sensitive info; abide by source licenses.
+
+✅ Done when: you know exactly what gets logged and how to trace any output back to sources and model versions.
+
+Phase 8 — Deployment Plan
+
+Environments
+
+Dev (local), Staging (team tests), Prod (writer access).
+
+Feature flags for experimental models or new retrievers.
+
+Release gate
+
+Only publish content that is: (a) approved by Human Agent; (b) passes compliance; (c) includes citations + disclaimers.
+
+✅ Done when: you have your promotion checklist and a simple rollback plan.
+
+What to ask me for next (and I’ll produce code to match your structure):
+
+Vector store bootstrap (FAISS) and chunking pipeline.
+
+PubMed/FDA/WHO/CDC retriever stubs with freshness filters.
+
+LangGraph graph.py with state, nodes, edges, and HITL loop.
+
+Agents’ prompt templates and compliance rule matcher.
+
+Streamlit or FastAPI app.py with review UI and export.
+
+config.yaml schema (keys, knobs, defaults).
+
+Tell me which module you want first, and I’ll generate production-ready code that drops into your folders.
