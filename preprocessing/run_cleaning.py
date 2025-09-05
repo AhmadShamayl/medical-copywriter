@@ -1,9 +1,8 @@
-import os
+"""import os
 import pdfplumber
 from PyPDF2 import PdfReader
 from text_cleaning import clean_text
 
-# Try to import marker, fall back to original libraries if not available
 try:
     from marker.convert import convert_single_pdf
     from marker.models import load_all_models
@@ -21,17 +20,14 @@ os.makedirs(CLEANED_DIR, exist_ok=True)
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
 def extract_text_with_marker(pdf_path: str) -> tuple[str, list, dict]:
-    """Extract text using Marker while preserving formatting"""
     if not MARKER_AVAILABLE:
         raise ImportError("Marker not available")
     
     try:
-        # Try with models first
         model_lst = load_all_models()
         full_text, images, metadata = convert_single_pdf(pdf_path, model_lst)
         return full_text, images, metadata
     except Exception as e:
-        # Try without models
         try:
             full_text, images, metadata = convert_single_pdf(pdf_path)
             return full_text, images, metadata
@@ -39,7 +35,6 @@ def extract_text_with_marker(pdf_path: str) -> tuple[str, list, dict]:
             raise Exception(f"Marker failed: {e}, {e2}")
 
 def extract_text_with_pdfplumber(pdf_path: str) -> str:
-    """Extract text while preserving line breaks and paragraphs"""
     text = ""
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
@@ -49,7 +44,6 @@ def extract_text_with_pdfplumber(pdf_path: str) -> str:
     return text
 
 def extract_text_with_pypdf(pdf_path: str) -> str:
-    """Fallback: use PyPDF2"""
     reader = PdfReader(pdf_path)
     text = ""
     for page in reader.pages:
@@ -59,28 +53,18 @@ def extract_text_with_pypdf(pdf_path: str) -> str:
     return text
 
 def process_pdf(pdf_path: str) -> tuple[str, list, dict]:
-    """
-    Process PDF using available method
-    Priority: Marker > pdfplumber > PyPDF2
-    
-    Returns:
-        tuple: (extracted_text, images, metadata)
-    """
-    # Try Marker first if available
     if MARKER_AVAILABLE:
         try:
             return extract_text_with_marker(pdf_path)
         except Exception as e:
             print(f"Marker failed for {pdf_path}: {e}")
     
-    # Fall back to pdfplumber
     try:
         text = extract_text_with_pdfplumber(pdf_path)
         return text, [], {"extractor": "pdfplumber"}
     except Exception as e:
         print(f"pdfplumber failed for {pdf_path}: {e}")
     
-    # Final fallback to PyPDF2
     try:
         text = extract_text_with_pypdf(pdf_path)
         return text, [], {"extractor": "pypdf2"}
@@ -89,7 +73,6 @@ def process_pdf(pdf_path: str) -> tuple[str, list, dict]:
         return "", [], {"error": str(e)}
 
 def save_images(images: list, pdf_name: str) -> None:
-    """Save extracted images to the images directory"""
     if not images:
         return
     
@@ -105,7 +88,6 @@ def save_images(images: list, pdf_name: str) -> None:
             print(f"Failed to save image {i+1}: {e}")
 
 def run_pipeline():
-    """Main pipeline to process all PDFs in the RAW_DIR"""
     pdf_files = [f for f in os.listdir(RAW_DIR) if f.lower().endswith(".pdf")]
     
     if not pdf_files:
@@ -121,15 +103,11 @@ def run_pipeline():
         pdf_name = fname.replace(".pdf", "")
         
         print(f"\nProcessing: {fname}")
-        
-        # Extract text, images, and metadata
         raw_text, images, metadata = process_pdf(pdf_path)
         
         if not raw_text:
             print(f"Failed to extract any text from {fname}")
             continue
-        
-        # Clean the extracted text
         try:
             cleaned_text = clean_text(raw_text)
             print(f"Text cleaned successfully")
@@ -137,7 +115,6 @@ def run_pipeline():
             print(f"Text cleaning failed: {e}")
             cleaned_text = raw_text  # Use raw text if cleaning fails
         
-        # Save cleaned text
         output_path = os.path.join(CLEANED_DIR, f"{pdf_name}.txt")
         try:
             with open(output_path, "w", encoding="utf-8") as f:
@@ -147,12 +124,10 @@ def run_pipeline():
             print(f"Failed to save text: {e}")
             continue
         
-        # Save images if any were extracted
         if images:
             print(f"Found {len(images)} image(s)")
             save_images(images, pdf_name)
         
-        # Print processing summary
         extractor = metadata.get('extractor', 'marker')
         print(f"Extractor used: {extractor}")
         print(f"Text length: {len(cleaned_text):,} characters")
@@ -162,3 +137,67 @@ def run_pipeline():
 
 if __name__ == "__main__":
     run_pipeline()
+
+
+
+"""
+
+
+
+import os
+from langchain_docling import DoclingLoader
+from text_cleaning import clean_text
+
+RAW_DIR = "data/"
+CLEANED_DIR = "data/cleaned/"   
+
+os.makedirs(CLEANED_DIR, exist_ok=True)
+
+def process_pdf_with_docling(pdf_path: str) -> str:
+    loader = DoclingLoader(pdf_path)
+    docs = loader.load()
+    full_text = "\n".join(doc.page_content for doc in docs if doc.page_content)
+    return full_text
+
+def run_pipeline():
+    pdf_files = [f for f in os.listdir(RAW_DIR) if f.lower().endswith(".pdf")]
+    
+    if not pdf_files:
+        print(f"No PDF files found in {RAW_DIR}")
+        return
+    
+    print(f"Found {len(pdf_files)} PDF file(s) to process with Docling")
+    print("=" * 60)
+    
+    for fname in pdf_files:
+        pdf_path = os.path.join(RAW_DIR, fname)
+        pdf_name = fname.replace(".pdf", "")
+        
+        print(f"\nProcessing: {fname}")
+        try:
+            raw_text = process_pdf_with_docling(pdf_path)
+            if not raw_text.strip():
+                print(f"No text extracted from {fname} using Docling")
+                continue
+    
+        except Exception as e:
+            print(f"Failed to process {fname} with Docling: {e}")
+            continue
+        try:
+            cleaned_text = clean_text(raw_text)
+            print(f"Text cleaned successfully")
+        except Exception as e:
+            print(f"Text cleaning failed: {e}")
+            cleaned_text = raw_text
+
+        output_path = os.path.join(CLEANED_DIR, f"{pdf_name}.txt")
+        try:
+            with open(output_path, "w", encoding="utf-8") as f:
+                f.write(cleaned_text)
+            print(f"Text saved to: {output_path}")
+        except Exception as e:
+            print(f"Failed to save text: {e}")
+
+if __name__ == "__main__":
+    run_pipeline()
+

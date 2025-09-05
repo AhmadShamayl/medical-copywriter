@@ -2,5 +2,6 @@
 
 ***CLEANING DATA***
  with using re
-
+made function to parse pdfs with these priorities:
+marker > pdfplumber > PyPDF2
  
