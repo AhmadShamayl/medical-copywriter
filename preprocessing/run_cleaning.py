@@ -1,4 +1,4 @@
-"""import os
+import os
 import pdfplumber
 from PyPDF2 import PdfReader
 from text_cleaning import clean_text
@@ -140,10 +140,9 @@ if __name__ == "__main__":
 
 
 
+
+
 """
-
-
-
 import os
 from langchain_docling import DoclingLoader
 from text_cleaning import clean_text
@@ -200,4 +199,4 @@ def run_pipeline():
 
 if __name__ == "__main__":
     run_pipeline()
-
+"""
