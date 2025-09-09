@@ -15,3 +15,14 @@ then used google's API for google-text-embedding-004
 
 ***VECTOR-DB***
 Implemented Chroma DB
+
+***RETRIEVING***
+Retrieve medical data from NCBI PubMed through their API
+
+
+***MCP***
+MCP = hub layer between retrievers and your RAG agent.
+
+Each retriever (Chroma, PubMed, Web) → registers as a “tool”.
+
+MCP normalizes responses into one schema → so your LangGraph agent can consume them without worrying about source differences.
