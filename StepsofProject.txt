@@ -13,3 +13,5 @@ Used Qwen 8b - It was a big model
 then used Qwen 0.6B - Still It was a big model for my System
 then used google's API for google-text-embedding-004 
 
+***VECTOR-DB***
+Implemented Chroma DB
