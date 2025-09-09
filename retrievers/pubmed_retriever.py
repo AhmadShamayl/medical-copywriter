@@ -40,7 +40,7 @@ def parse_pubmed(xml_data):
     for article in root.findall(".//PubmedArticle"):
         title = article.findtext(".//ArticleTitle")
         abstract_parts = article.findall(".//AbstractText")
-        abstract = ' '.json([a.text for a in abstract_parts if a.text]) if abstract_parts else None
+        abstract = ' '.join([a.text for a in abstract_parts if a.text]) if abstract_parts else None
         pmid = article.findtext(".//PMID")
 
         authors = []
@@ -55,12 +55,22 @@ def parse_pubmed(xml_data):
             year = article.findtext (".//PubDate/MedlineDate")
 
         articles.append({
-            "pmid": pmid,
-            "title": title,
-            "abstract": abstract,
+            "doc_id": pmid,
+            "title": title or "No Title",
+            "text": abstract or "",
+            "source" : "pubmed",
+            "url" : f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
             "authors": authors,
             "year": year
         })
 
     return articles
+
+def pubmed_retrieve(query, max_results = 5):
+    pmids = search_pubmed(query, max_results=max_results)
+    if not pmids:
+        return []
+    
+    xml_data = fetch_pubmed(pmids)
+    return parse_pubmed(xml_data)
 
