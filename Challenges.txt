@@ -1,2 +1,7 @@
 1 **** I have first encountered pparsing data with pdfs, I trie using marker but it was unsuccessfull then i tried using docling - i have no computational power for that
 2 **** Chunking - I have tried forst simple chunking then oved on to semantic chunking and using opensource model for my machine was a bigger thing then I opted for google's API to create embeddings for chunking
+
+
+
+
+****Prompt -> mcp.rag_pipeline
