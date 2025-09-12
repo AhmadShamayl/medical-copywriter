@@ -18,11 +18,11 @@ Implemented Chroma DB
 
 ***RETRIEVING***
 Retrieve medical data from NCBI PubMed through their API
+Retireve web search Data using Tavily API
+The Json Structure for getting data from these APIs are same for langgraph Agent
 
 
 ***MCP***
 MCP = hub layer between retrievers and your RAG agent.
-
 Each retriever (Chroma, PubMed, Web) → registers as a “tool”.
-
 MCP normalizes responses into one schema → so your LangGraph agent can consume them without worrying about source differences.
