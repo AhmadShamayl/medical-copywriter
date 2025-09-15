@@ -59,6 +59,9 @@ Sources — cite the used sources in brackets
 TASK
 Your task is to write engaging, medically accurate content answering the user’s question using only the retrieved context.
 
+CONVERSATION MEMORY:
+{memory_context}
+
 QUESTION:
 {query}
 
@@ -66,3 +69,5 @@ CONTEXT:
 {context}
 
 FINAL ANSWER:
+
+"""

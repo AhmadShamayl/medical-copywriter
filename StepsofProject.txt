@@ -28,3 +28,23 @@ The Json Structure for getting data from these APIs are same for langgraph Agent
 MCP = hub layer between retrievers and your RAG agent.
 Each retriever (Chroma, PubMed, Web) → registers as a “tool”.
 MCP normalizes responses into one schema → so your LangGraph agent can consume them without worrying about source differences.
+
+
+***MEMORY***
+Used Hybrid approach to save the memory that will make the system more efficient and cheaper
+Used conversation Buffer Memory with k = 5 
+Used convesation Summary Memory with gpt-3.5-turbo llm to create summaries
+                                User ↔ Assistant 
+                                        ↓
+                                    save_context()  → adds to buffer (short-term)
+                                        ↓
+                                If turn_count ≥ 10  → _summaraize_memory() → append to summary (long-term)
+                                        ↓
+                                    save to JSON file
+
+                                On restart:
+                                _load_memory() → restore buffer + summary from JSON
+
+                                load_context() → gives summary + last few turns to the model
+
+
