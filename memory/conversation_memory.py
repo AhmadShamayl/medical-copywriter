@@ -1,11 +1,14 @@
 from langchain.memory import ConversationBufferMemory , ConversationSummaryMemory
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 import json
 import os
 from collections import deque
 from openai import OpenAI
+from dotenv import load_dotenv
 
-llm = ChatOpenAI(model = "gpt-3.5-turbo-0125" , temperature = 0)
+load_dotenv()
+
+llm = ChatOpenAI(model = "gpt-3.5-turbo-0125" , temperature = 0, key = os.getenv('OPENAI_API_KEY'))
 MEMORY_PATH = "memory/memory_store.json"
 
 buffer_memory = ConversationBufferMemory(
@@ -22,17 +25,18 @@ summary_memory = ConversationSummaryMemory (
 
 
 class HybridConversationMemory:
-    def __init__ (self, max_turns  = 5, summary_trigger = 10):
+    def __init__ (self, max_turns  = 5, summary_trigger = 10, save_path: str = None):
         self.client = OpenAI(api_key=os.getenv("OPENAI_api_key"))
         self.max_turns = max_turns
         self.summary_trigger = summary_trigger
         self.buffer = deque (maxlen = max_turns)
         self.summary = ""
         self.turn_count = 0
+        self.save_path = save_path or "memory/memory_store.json"
         self._load_memory ()
     
     def _load_memory(self):
-        if os.path.exists(MEMORY_PATH):
+        if os.path.exists(self.save_path):
             try:
                 with open(MEMORY_PATH, "r" , encoding = "utf-8") as f:
                     data = json.load(f)
@@ -45,7 +49,7 @@ class HybridConversationMemory:
 
     def _save_memory(self):
         try: 
-            with open (MEMORY_PATH , "w" , encoding = "utf-8") as f:
+            with open (self.save_path , "w" , encoding = "utf-8") as f:
                 json.dump ({
                     "summary" : self.summary , 
                     "buffer" : list(self.buffer),

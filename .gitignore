@@ -3,5 +3,5 @@ data/
 .venv
 data_storage/
 __pycache__
-vectorstore/
+vectorstore/chroma_db/
 .env.example
