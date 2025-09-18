@@ -1,0 +1,10 @@
+{
+  "summary": "",
+  "buffer": [
+    {
+      "user ": "What is diabetic retinopathy?",
+      "assistant": "Diabetic retinopathy is a condition that occurs when diabetes affects the blood vessels and nerve tissue in the retina. It is a leading cause of blindness in American adults and the most common eye disease in people with diabetes. Changes in the blood vessels of the retina, the light-sensitive tissue at the back of the inner eye, can lead to swelling and fluid leakage. Risk factors for diabetic retinopathy include older age, male sex, prolonged diabetes duration, elevated HbA1c, and obesity. \n\nIn patients with diabetic retinopathy, clinical presentations may include optic disc edema, intraretinal fluid on OCT, and crowded optic discs. Semaglutide, a GLP-1 receptor agonist used for type 2 diabetes and obesity, has been associated with an increased risk of non-arteritic anterior ischemic optic neuropathy (NAION), a rare ocular adverse event. Among GLP-1 receptor agonists, semaglutide accounted for the majority of reported NAION cases. \n\nTo manage diabetic retinopathy, targeted ophthalmologic monitoring is recommended, especially in patients with predisposing factors. Early detection and intervention are crucial in preventing vision loss. If you have diabetes, it's essential to have regular eye exams to monitor for diabetic retinopathy and other eye complications. Remember, timely treatment can help reduce the risk of vision impairment. \n\n[National Eye Institute], [PubMed: 2024 Study], [Johns Hopkins Medicine]"
+    }
+  ],
+  "turn_count": 1
+}
