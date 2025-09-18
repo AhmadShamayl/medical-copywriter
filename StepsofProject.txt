@@ -32,8 +32,8 @@ MCP normalizes responses into one schema → so your LangGraph agent can consume
 
 ***MEMORY***
 Used Hybrid approach to save the memory that will make the system more efficient and cheaper
-Used conversation Buffer Memory with k = 5 
-Used convesation Summary Memory with gpt-3.5-turbo llm to create summaries
+Used langgraph In Memory Store for memory persistant    
+and created memory like user_id = { session_id , turn_count }
                                 User ↔ Assistant 
                                         ↓
                                     save_context()  → adds to buffer (short-term)

@@ -65,9 +65,10 @@ CONVERSATION MEMORY:
 QUESTION:
 {query}
 
+Use the retrieved context below to answer the new question.
 CONTEXT:
 {context}
 
-FINAL ANSWER:
+FINAL ANSWER: Answer a Structure medical article
 
 """
