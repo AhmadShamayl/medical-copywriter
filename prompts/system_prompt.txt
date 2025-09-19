@@ -59,15 +59,16 @@ Sources — cite the used sources in brackets
 TASK
 Your task is to write engaging, medically accurate content answering the user’s question using only the retrieved context.
 
-CONVERSATION MEMORY:
+MEMORY CONTEXT:
 {memory_context}
 
-QUESTION:
+Use the retrieved context below to answer the new question.
+RETRIEVED CONTEXT:
+{context}
+
+USER QUESTION:
 {query}
 
-Use the retrieved context below to answer the new question.
-CONTEXT:
-{context}
 
 FINAL ANSWER: Answer a Structure medical article
 
