@@ -48,4 +48,7 @@ and created memory like user_id = { session_id , turn_count }
 
                                 load_context() → gives summary + last few turns to the model
 
+Saving memory in List 
+Sorting out the output in proper json structure
+
 

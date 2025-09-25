@@ -196,3 +196,33 @@ Streamlit or FastAPI app.py with review UI and export.
 config.yaml schema (keys, knobs, defaults).
 
 Tell me which module you want first, and I’ll generate production-ready code that drops into your folders.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+📊 Phase 8 – Monitoring, Logging, and Evaluation
+
+Goal: make it production-grade.
+
+ Log all user queries + responses + retrieved docs.
+
+ Use LangSmith / OpenTelemetry traces for monitoring chains.
+
+ Write unit tests for rag_pipeline, conversation_memory, and manager.
