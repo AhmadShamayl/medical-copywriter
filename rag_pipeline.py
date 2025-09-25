@@ -25,21 +25,19 @@ def generate_answer(query: str, sources = ['chroms', 'pubmed' , 'web'] , max_res
     if not retrieved_docs:
         return "No relevant information found"
     
-    context_parts = []
-    sources_out = []
-    for doc in retrieved_docs:
-        title = doc.get("title", "Unknown")
-        text = doc.get("text", "")
-        context_parts.append(f"Title: {title}\n{text}\n")
+    standardized_sources = []
+    context_parts = ""
 
-        sources_out.append(
-            {
-                "title": title,
-                "snippet": (text[:400]).strip(),
-                "source": doc.get("source", "unknown"),
-                "url": doc.get("url"),
-            }
-        )
+    for doc in retrieved_docs:
+        standardized_doc = {
+            "title" : doc.get ("title" , "Unknown"),
+            "source" : doc.get ("source" , "Unknown"),
+            "doc_id" : doc.get("doc_id" , None),
+            "preview" : (doc.get("text" , "")[:200] + "...") if doc.get("text") else "",
+            "text" : doc.get("text" , "")
+        }
+        standardized_sources.append(standardized_doc)
+        context_parts += f"title: {standardized_doc['title']}\n{standardized_doc['text']}\n"
 
     memory_context = memory.load_context() if memory else "No previous conversation"
     context = "\n\n".join(context_parts)
@@ -61,6 +59,10 @@ def generate_answer(query: str, sources = ['chroms', 'pubmed' , 'web'] , max_res
         temperature= 0.2
     )
     answer_text = response.choices[0].message.content
-    memory.save_context(query , answer_text)
+    if memory:
+        memory.save_context(query , answer_text)
 
-    return answer_text
+    return {
+        "answer" : answer_text,
+        "sources" : standardized_sources
+                    }

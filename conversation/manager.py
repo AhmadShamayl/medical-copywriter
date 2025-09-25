@@ -12,7 +12,7 @@ SESSION_NAMESPACE = "memory/sessions"
 os.makedirs(SESSION_NAMESPACE, exist_ok =True)
 
 _sessions: Dict[str , HybridConversationMemory] = {}
-_sessions_user_map : Dict [str, str] = {}
+_sessions_user_map = {}
 
 def start_conversation(user_id: str) -> str:
     session_id = str(uuid.uuid4())
@@ -42,8 +42,8 @@ def get_response (session_id: str , query: str) -> str:
         raise ValueError(f"no actove session found for {session_id}")
     mem = _sessions[session_id]
     memory_context = mem.load_context()
-    answer = generate_answer(query, memory= mem , memory_context = memory_context)
-    mem.save_context(query, answer)
+    result = generate_answer(query, memory= mem , memory_context = memory_context)
+    mem.save_context(query, result["answer"])
 
     user_id = _sessions_user_map.get(session_id, "unknown_user")
     store.put (
@@ -56,7 +56,8 @@ def get_response (session_id: str , query: str) -> str:
             "turn_count" : mem.turn_count
         }
     )
-    return answer
+
+    return result
 
 def reset_conversation (session_id:str):
     mem = _sessions.get(session_id)
@@ -76,24 +77,6 @@ def reset_conversation (session_id:str):
             }
         )
         print (f"[CONVO] Session {session_id} has been reset")
-
-
-    """if session_id not in _sessions:
-        raise ValueError(f"Session {session_id} not found.")
-    
-    mem = _sessions[session_id]
-    mem.reset_memory()
-    del _sessions[session_id]
-
-    memory_path = os.path.join(SESSION_DIR, f'{session_id}.json')
-    if os.path.exists(memory_path):
-        os.remove(memory_path)
-
-    print(f"[CONVO] Session {session_id} has been reset.")"""
-
-"""def list_sessions() -> Dict[str, str]:
-    return list (_sessions.keys())
-"""
 
 
 
