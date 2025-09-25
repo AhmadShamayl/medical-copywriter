@@ -215,27 +215,7 @@ Tell me which module you want first, and I’ll generate production-ready code t
 
 
 
- Add a list_active_sessions() helper to enumerate active users/sessions.
 
-💬 Phase 6 – Response Shaping & Role Specialization
-
-Goal: make the bot sound like a real medical copywriter assistant.
-
- Move your reAct_prompt.txt to prompts/system_prompt.txt and add clear instructions on tone, structure (headline, body, CTA).
-
- Include memory_context + retrieved context explicitly in the prompt.
-
- Optionally add tools/agents (like a “PubMed fetch agent” or “Drug Info agent”) and let the ReAct loop call them.
-
-🖥️ Phase 7 – Build the UI Layer
-
-Goal: let real users interact.
-
- Build a simple web front-end with Streamlit or FastAPI + React.
-
- Implement chat interface (session token → conversation memory).
-
- Show retrieved sources and allow user to click them.
 
 📊 Phase 8 – Monitoring, Logging, and Evaluation
 

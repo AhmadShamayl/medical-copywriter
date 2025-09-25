@@ -25,15 +25,25 @@ def generate_answer(query: str, sources = ['chroms', 'pubmed' , 'web'] , max_res
     if not retrieved_docs:
         return "No relevant information found"
     
-    context_parts = ""
+    context_parts = []
+    sources_out = []
     for doc in retrieved_docs:
-        title = doc.get('title' , "Unknown")
-        text = doc.get('text' , "")
-        context_parts += f"Title: {title}\n{text}\n"
+        title = doc.get("title", "Unknown")
+        text = doc.get("text", "")
+        context_parts.append(f"Title: {title}\n{text}\n")
 
-    memory_context  = memory.load_context() if memory else "No previous conversation"
+        sources_out.append(
+            {
+                "title": title,
+                "snippet": (text[:400]).strip(),
+                "source": doc.get("source", "unknown"),
+                "url": doc.get("url"),
+            }
+        )
 
+    memory_context = memory.load_context() if memory else "No previous conversation"
     context = "\n\n".join(context_parts)
+
     memory_context = memory.load_context()
     system_prompt = load_prompt ()
     user_prompt = (
