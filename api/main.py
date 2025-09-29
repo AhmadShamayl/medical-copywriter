@@ -12,6 +12,10 @@ class ChatRequest(BaseModel):
 class StartRequest(BaseModel):
     user_id : str
 
+@app.get("/")
+async def root():
+    return {"message" : "Medical Copywriter API is running"}
+
 @app.post("/start")
 def start_chat(req: StartRequest):
     session_id = start_conversation(req.user_id)
