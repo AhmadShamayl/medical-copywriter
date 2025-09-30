@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse , JSONResponse
 from pydantic import BaseModel
 from conversation.manager import start_conversation , get_response, reset_conversation , list_active_sessions
+import os
 
-app = FastAPI(title = "Medical Copywriter API")
+app = FastAPI(title = "Medical Copywriter API", version = "1.0.0")
 
 
 class ChatRequest(BaseModel):
@@ -14,23 +16,24 @@ class StartRequest(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message" : "Medical Copywriter API is running"}
+    return {"message" : "Medical Copywriter API is running! Visit /docs for Swagger UI"}
 
-@app.post("/start")
-def start_chat(req: StartRequest):
-    session_id = start_conversation(req.user_id)
+@app.get("favicon.ico" , include_in_schema=False)
+async def favicon():
+    favicon_path = os.path.join("api" , "static" , "favicon.ico")
+    if os.path.exists(favicon_path):
+        return FileResponse(favicon_path)
+    return JSONResponse(status_code = 404, content = {"detail" : "Favicon not found"})
+
+@app.post("/start/{user_id}")
+async def start(user_id: str):
+    session_id = start_conversation(user_id)
     return {"session_id" : session_id, "message" : "Conversation Starterd"}
 
-@app.post("/chat")
-def chat(req: ChatRequest):
-    try:
-        result = get_response(req.session_id, req.query)
-        return {
-            "answer" : result["answer"],
-            "sources" : result["sources"]
-        }
-    except Exception as e:
-        return {"error" : str(e)}
+@app.post("/ask/{session_id}")
+async def ask(session_id: str, query:str):
+    response = get_response(session_id , query)
+    return query
 
 
 @app.post("/reset/{session_id}")
