@@ -52,3 +52,9 @@ Saving memory in List
 Sorting out the output in proper json structure
 
 
+
+***API***
+Implemented Fast API 
+and Implemented favicon ico
+
+
