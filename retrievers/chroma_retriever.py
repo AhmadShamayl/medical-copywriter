@@ -1,3 +1,9 @@
+import asyncio
+
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 import chromadb
 from chromadb.config import Settings
 from typing import List, Dict, Any
@@ -6,6 +12,7 @@ import json
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from chromadb.utils import embedding_functions
 from dotenv import load_dotenv
+
 
 
 load_dotenv()
