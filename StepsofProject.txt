@@ -58,3 +58,17 @@ Implemented Fast API
 and Implemented favicon ico
 
 
+***UI***
+Implemented Streamlit UI 
+with FAST API as backend connectivity
+with 6 APIs - GET / Root
+              POST /start_conversation
+              POST /get_response
+              POST /ask
+              POST /reset_conversation
+              GET /sessions
+
+
+    
+            
+    
