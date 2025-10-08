@@ -22,10 +22,22 @@ if "session_id" not in st.session_state:
             st.error("Failed to start conversation. Please check FastAPI server.")
             st.stop()
 
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []  
+
+for msg in st.session_state.messages:
+    role = "Assistan" if msg["role"] == "assistant" else "You"
+    st.markdown(f"**{role}:** {msg['content']}")
+
+
+    
 # Chat input
 query = st.text_input("Ask your medical question:")
 
 if st.button("Send") and query:
+
+    st.session_state.messages.append({"role": "user", "content": query})
     with st.spinner("Fetching response..."):
         resp = requests.post(f"{FASTAPI_URL}/get_response", json={
             "session_id": st.session_state.session_id,
