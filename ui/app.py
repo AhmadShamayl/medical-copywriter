@@ -71,12 +71,37 @@ if prompt := st.chat_input("Ask your medical copywriting question here..."):
                                                  "content": f"An error occured: {e}"})
 
 with st.sidebar:
-    st.subheader("Active Sessions")
-    if st.button("Refresh Active Sessions"):
-        resp = requests.get(f"{FASTAPI_URL}/list_sessions")
-        if resp.status_code == 200:
-            sessions = resp.json()
-            for s in sessions:
-                st.sidebar.write(f"- {s['session_id']} ({s['user_id']})")
-        else:
-            st.sidebar.error("Failed to fetch sessions.")
+    st.subheader("🩺 Active Sessions")
+
+    if st.button("🔄 Refresh Active Sessions"):
+        try:
+            resp = requests.get(f"{FASTAPI_URL}/list_sessions", timeout=10)
+            if resp.status_code == 200:
+                data = resp.json()
+                sessions = data.get("active_sessions", [])
+
+                if sessions:
+                    for s in sessions:
+                        with st.container():
+                            st.markdown(
+                                f"""
+                                <div style="border:1px solid #444; border-radius:10px; padding:10px; margin-bottom:8px;">
+                                    <b>🩺 Session ID:</b> {s.get('session_id', 'N/A')}<br>
+                                    <b>👤 User ID:</b> {s.get('user_id', 'Unknown')}<br>
+                                    <b>🗣️ Turn Count:</b> {s.get('turn_count', 0)}
+                                </div>
+                                """,
+                                unsafe_allow_html=True
+                            )
+                else:
+                    st.info("No active sessions found.")
+            else:
+                st.error(f"Failed to fetch sessions (code: {resp.status_code}).")
+        except Exception as e:
+            st.error(f"Error fetching sessions: {e}")
+
+        # Update last refresh time
+        st.session_state["last_refresh"] = "Just now"
+
+    st.markdown("---")
+    st.caption(f"🕒 Last refreshed: {st.session_state.get('last_refresh', 'Not yet')}")

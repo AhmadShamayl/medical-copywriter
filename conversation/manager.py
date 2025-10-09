@@ -81,7 +81,7 @@ def reset_conversation (session_id:str):
 
 
 def get_user_sessions(user_id : str):
-    all_sessions = store.list(namespace = SESSION_NAMESPACE)
+    all_sessions = store.search(SESSION_NAMESPACE)
     user_sessions = []
     for s in all_sessions:
         data = store.get(namespace=SESSION_NAMESPACE, key = s.key)
@@ -92,16 +92,42 @@ def get_user_sessions(user_id : str):
 
 def list_active_sessions():
     """
-    Return all sessions saved in the st
-    as [{'session_id :.... , "user_id" : ...}]
+    Return all sessions stored in the InMemoryStore
+    as [{'session_id': ..., 'user_id': ...}]
     """
-
-
-    all_sessions = store.list(namespace = SESSION_NAMESPACE)
     result = []
-    for s in all_sessions:
-        data = store.get(namespace= SESSION_NAMESPACE , key = s.key)
-        if data: 
-            result.append({"session_id" : s.key , "user_id" :data.get("user_id" , "unknown")} )
-        return result
+
+    try:
+        all_sessions = store.search(SESSION_NAMESPACE)
+        print(f"[DEBUG] store.search() returned: {all_sessions}")
+    except Exception as e:
+        print(f"[ERROR] Could not fetch sessions: {e}")
+        return []
+
+    if not all_sessions:
+        print("[INFO] No active sessions found.")
+        return []
+
+    for idx, s in enumerate(all_sessions):
+        data = {}  # Always define it at the top of the loop to avoid NameError
+        try:
+            if hasattr(s, "key"):  # When store returns an object
+                session_id = getattr(s, "key", None)
+                data = getattr(s, "value", {}) or {}
+            else:  # When store returns string keys
+                session_id = str(s)
+                data = store.get(namespace=SESSION_NAMESPACE, key=session_id) or {}
+
+            result.append({
+                "session_id": session_id,
+                "user_id": data.get("user_id", "unknown_user"),
+                "turn_count": data.get("turn_count", 0)
+            })
+        except Exception as inner_e:
+            print(f"[WARN] Failed to process session {idx}: {inner_e}")
+            continue
+
+    print(f"[DEBUG] Active sessions result: {result}")
+    return result
+
     

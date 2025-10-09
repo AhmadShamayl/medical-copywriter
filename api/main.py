@@ -58,7 +58,7 @@ async def reset (req: ResetRequest):
     return {"message" : f"Session {req.session_id} reset."}
 
 
-@app.get("/sessions")
+@app.get("/list_sessions")
 async def list_sessions():
     sessions = list_active_sessions()
     return {"active_sessions"  : sessions}
