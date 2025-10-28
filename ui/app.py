@@ -1,8 +1,13 @@
 import streamlit as st
 import requests
+import json
+import os
+from datetime import datetime
+
 
 # Point this to your FastAPI server
 FASTAPI_URL = "http://localhost:9000"
+DATA_FILE = "data/conversations.json"
 
 st.set_page_config(
     page_title="Medical Copywriter Assistant",
@@ -12,6 +17,29 @@ st.set_page_config(
 
 st.title("Medical Copywriter Assistant")
 
+def load_conversations():
+    if not os.path.exists (DATA_FILE):
+        return {}
+    
+    try: 
+        with open(DATA_FILE, "r", encoding = "utf-8") as f:
+            content = f.read().strip()
+            if not content:
+                return {}
+            return json.loads(content)
+    except (json.JSONDecodeError, OSError) as e:
+        print (f"Failed to load conversations: {e}")
+        return {}
+    
+def save_conversations(convos):
+    os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(conversations, f ,indent=2)
+    
+conversations = load_conversations()
+user_id = "user_123"
+
+
 # Initialize session
 if "session_id" not in st.session_state:
     with st.spinner("Starting new conversation..."):
@@ -19,6 +47,9 @@ if "session_id" not in st.session_state:
         if resp.status_code == 200:
             st.session_state.session_id = resp.json()["session_id"]
             st.session_state.messages = []
+            conversations.setdefault(user_id, {})[st.session_state.session_id] = []
+            save_conversations(conversations)
+
         else:
             st.error("Failed to start conversation. Please check FastAPI server.")
             st.stop()
@@ -71,12 +102,29 @@ if prompt := st.chat_input("Ask your medical copywriting question here..."):
                                                  "content": f"An error occured: {e}"})
 
 with st.sidebar:
-    st.subheader("Active Sessions")
-    if st.button("Refresh Active Sessions"):
-        resp = requests.get(f"{FASTAPI_URL}/list_sessions")
+    st.title("🩺 MediCopy AI")
+    st.markdown("Your medical copywriter companion")
+    st.subheader("Past Conversations")
+
+    user_convos = conversations.get(user_id, {})
+
+    for session_id, msgs in user_convos.items():
+        print(session_id, msgs)
+        if st.button(f"{session_id[:8]}...", key = f"load_{session_id}"):
+            st.session_state.session_id = session_id
+            st.session_state.messages = user_convos[session_id]
+            st.experimental_rerun()
+
+    st.markdown("---")
+
+    if st.button("Start New Chat", key = "start_new_chat_sidebar"):
+        resp = requests.post(f"{FASTAPI_URL}/start_conversation", json={"user_id": user_id})
         if resp.status_code == 200:
-            sessions = resp.json()
-            for s in sessions:
-                st.sidebar.write(f"- {s['session_id']} ({s['user_id']})")
+            new_session = resp.json()["session_id"]
+            st.session_state.session_id = new_session
+            st.session_state.messages = []
+            conversations[user_id][new_session] = []
+            save_conversations(conversations)
+            st.experimental_rerun()
         else:
-            st.sidebar.error("Failed to fetch sessions.")
+            st.error("Failed to start new conversation.")
