@@ -34,9 +34,14 @@ def load_conversations():
 def save_conversations(convos):
     os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
     with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(conversations, f ,indent=2)
+        json.dump(convos, f ,indent=2)
     
-conversations = load_conversations()
+if "force_reload" in st.session_state:
+    conversations = load_conversations()
+    del st.session_state["force_reload"]
+else:
+    conversations = load_conversations()
+
 user_id = "user_123"
 
 
@@ -91,7 +96,9 @@ if prompt := st.chat_input("Ask your medical copywriting question here..."):
                             url = src.get("url" , "#")
                             st.markdown(f"- [{title}]({url})")
 
-                   st.session_state.messages.append({"role": "assistant", "content": answer})
+                   conversations.setdefault(user_id, {})[st.session_state.session_id] = st.session_state.messages
+                   save_conversations(conversations)
+
                else:
                    st.error(f"Backend error: {resp.status_code}")
                    st.session_state.messages.append({"role": "assistant", "content": "Failed to fetch response from backend"})
@@ -110,10 +117,12 @@ with st.sidebar:
 
     for session_id, msgs in user_convos.items():
         print(session_id, msgs)
-        if st.button(f"{session_id[:8]}...", key = f"load_{session_id}"):
+        if st.button(f"{session_id[:8]}...", key=f"load_{session_id}"):
             st.session_state.session_id = session_id
             st.session_state.messages = user_convos[session_id]
-            st.experimental_rerun()
+            st.session_state["force_reload"] = True
+            st.rerun()
+
 
     st.markdown("---")
 
@@ -125,6 +134,7 @@ with st.sidebar:
             st.session_state.messages = []
             conversations[user_id][new_session] = []
             save_conversations(conversations)
-            st.experimental_rerun()
+            st.session_state["force_reload"] = True
+            st.rerun()
         else:
             st.error("Failed to start new conversation.")
