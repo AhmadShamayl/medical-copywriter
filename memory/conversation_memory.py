@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-llm = ChatOpenAI(model = "gpt-3.5-turbo-0125" , temperature = 0, key = os.getenv('OPENAI_API_KEY'))
+llm = ChatOpenAI(model = "gpt-3.5-turbo-0125" , temperature = 0, api_key = os.getenv('OPENAI_API_KEY'))
 MEMORY_PATH = "memory/memory_store.json"
 
 store  = InMemoryStore()
