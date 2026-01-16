@@ -69,6 +69,9 @@ with 6 APIs - GET / Root
               GET /sessions
 Implemented chat conversation display  and fix sources informations
 
+Trying to correctly implement chat conversations to the app 
+tried rerun and different logics too
+
     
             
     

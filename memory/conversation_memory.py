@@ -17,7 +17,7 @@ class HybridConversationMemory:
     def __init__ (self, user_id:str = 'default_user', max_turns  = 5, summary_trigger = 10, save_path: str = None):
         self.user_id = user_id
         self.namespace = ("memory" , user_id)
-        self.client = OpenAI(api_key=os.getenv("OPENAI_api_key"))
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.max_turns = max_turns
         self.summary_trigger = summary_trigger
         self.buffer = deque (maxlen = max_turns)

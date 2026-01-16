@@ -116,10 +116,10 @@ with st.sidebar:
     user_convos = conversations.get(user_id, {})
 
     for session_id, msgs in user_convos.items():
-        print(session_id, msgs)
-        if st.button(f"{session_id[:8]}...", key=f"load_{session_id}"):
+        label = f"{session_id[:8]}..."
+        if st.button(label, key=f"load_{session_id}"):
             st.session_state.session_id = session_id
-            st.session_state.messages = user_convos[session_id]
+            st.session_state.messages = msgs
             st.session_state["force_reload"] = True
             st.rerun()
 
