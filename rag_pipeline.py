@@ -49,7 +49,7 @@ def generate_answer(query: str, sources = ['chroms', 'pubmed' , 'web'] , max_res
         f" ---- RETRIEVED CONTEXT ----\n{context_parts}\n\n"
         f" ---- USER QUESTION ----\n{query}"
 
-    )
+    )            
 
     response = client.chat.completions.create(
         model = "gpt-3.5-turbo-0125" , 
@@ -63,6 +63,6 @@ def generate_answer(query: str, sources = ['chroms', 'pubmed' , 'web'] , max_res
         memory.save_context(query , answer_text)
 
     return {
-        "answer" : answer_text,
+        "answer" : answer_text, 
         "sources" : standardized_sources
                     }

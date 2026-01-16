@@ -226,3 +226,7 @@ Goal: make it production-grade.
  Use LangSmith / OpenTelemetry traces for monitoring chains.
 
  Write unit tests for rag_pipeline, conversation_memory, and manager.
+
+
+
+ Learning push and pull plus merge and PR
